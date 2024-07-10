@@ -49,5 +49,45 @@ df5.plot(kind = 'barh', stacked = True, xlabel= 'Scores')
 df5.plot(kind = 'scatter',x = 'Texture Rating', y = 'Overall Rating', s = 500, c = 'green')
 df5.plot(kind = 'hist', bins = 20)
 df5.boxplot()
-df5.plot( kind = 'area', figsize = (10,5))
+df5.plot(kind = 'area', figsize = (10,5))
 df5.plot.pie(y = 'Overall Rating')
+
+#Data cleaning
+
+df6 = pd.read_excel(r'C:\Users\basil\OneDrive\Documents\Basil Rehan Siddiqui\Other\Datasets\Customer Call List.xlsx')
+df6 = df6.set_index('CustomerID')
+df6 = df6.drop_duplicates()
+df6 = df6.drop(columns = 'Not_Useful_Column')
+df6['Last_Name'] = df6['Last_Name'].str.strip('123._/')
+df6['Last_Name'] = df6['Last_Name'].str.strip()
+df6['Phone_Number'] = df6['Phone_Number'].str.replace('[^a-zA-Z0-9]','')
+df6['Phone_Number'] = df6['Phone_Number'].str.strip()
+
+def format_phone_number(number):
+    number = str(number)
+    if len(number) == 10:
+        return f"{number[:3]}-{number[3:6]}-{number[6:]}"
+    return number  # Return as is if not 10 digits (handle unexpected cases)
+
+df6['Phone_Number'] = df6['Phone_Number'].apply(format_phone_number)
+df6['Phone_Number'] = df6['Phone_Number'].replace('nan','')
+df6['Phone_Number'] = df6['Phone_Number'].replace('Na','')
+df6[['Street', 'State', 'Zipcode']] = df6['Address'].str.split(',',2, expand = True)
+df6['Paying Customer'] = df6['Paying Customer'].replace('Y','Yes')
+df6['Paying Customer'] = df6['Paying Customer'].replace('N','No')
+df6['Do_Not_Contact'] = df6['Do_Not_Contact'].replace('Y','Yes')
+df6['Do_Not_Contact'] = df6['Do_Not_Contact'].replace('N','No')
+df6['Do_Not_Contact'] = df6['Do_Not_Contact'].replace('','No')
+df6 = df6.drop(columns = 'Address')
+df6 = df6.replace('N/a', '')
+df6 = df6.fillna('')
+
+for x in df6.index:
+    if df6.loc[x, 'Do_Not_Contact'] == 'Yes':
+        df6.drop(x, inplace = True)
+        
+for x in df6.index:
+    if df6.loc[x, 'Phone_Number'] == '':
+        df6.drop(x, inplace = True)
+        
+df6
