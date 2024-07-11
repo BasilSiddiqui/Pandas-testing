@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 #Indexing and filtering
@@ -91,3 +92,32 @@ for x in df6.index:
         df6.drop(x, inplace = True)
         
 df6
+
+#Exploratory data analysis
+
+df7 = pd.read_csv(r'C:\Users\basil\OneDrive\Documents\Basil Rehan Siddiqui\Other\Datasets\world_population (1).csv')
+pd.set_option('display.float_format', '{:.2f}'.format)
+
+test1 = df7.describe()
+
+test2 = df7.isnull().sum()
+test3 = df7.nunique()
+
+test4 = df7.sort_values(by = '2022 Population', ascending= False).head()
+
+test5 = df.corr()
+
+sns.heatmap(df7.corr(), annot = True)
+plt.rcParams['figure.figsize'] = (20,7)
+plt.show()
+
+test6 = df7[df7['Continent'] == 'Oceania']
+test7 = df7.groupby('Continent')['1970 Population','1980 Population', '1990 Population', '2000 Population','2010 Population', '2015 Population', '2020 Population','2022 Population'].mean().sort_values(by = '2022 Population', ascending = False)
+test8 = test7.transpose()
+
+test8.plot()
+
+df7.boxplot()
+test9 = df7.select_dtypes(include = 'float')
+
+#That was fun
